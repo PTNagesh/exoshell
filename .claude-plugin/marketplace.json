@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "ralph-ryan",
-  "description": "Ralph autonomous agent plugins for iterative development with Claude Code",
+  "name": "exoshell",
+  "description": "AI-assisted development plugins for Claude Code",
   "owner": {
     "name": "wquguru",
     "email": "wquguru@gmail.com"
