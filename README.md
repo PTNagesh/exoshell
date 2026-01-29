@@ -1,4 +1,4 @@
-# Exoshell
+# Exoshell🦞🐚
 
 **Exoshell** (exoskeleton + shell) draws inspiration from Moltbot's origin story — the project that evolved from "Clawdbot" (a claw-wielding chatbot) to "Moltbot" (referencing a lobster's molting process). Just as lobsters shed their shells to grow, developers using Exoshell continuously upgrade their capabilities by adopting new AI-assisted workflows and Claude plugins. The name captures both the biological metaphor of growth through transformation and the technical reality of building a pluggable "shell" of development skills.
 
