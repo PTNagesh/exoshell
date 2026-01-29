@@ -132,9 +132,31 @@ Proceed anyway? (y/n)
 
 ## Branch Setup
 
-- Check current branch matches PRD `branchName`
-- If not, checkout or create from main
-- **Note:** Multiple PRDs can share the same branch (e.g., `jeff/dev-2`)
+Read `branchName` and `baseBranch` from `prd.json`:
+
+```bash
+git branch --show-current
+```
+
+**Branch logic:**
+
+| Condition | Action |
+|-----------|--------|
+| Current branch == `branchName` | Stay on current branch |
+| `baseBranch` exists in prd.json | Create `branchName` from `baseBranch` |
+| `baseBranch` not set | Assume using current branch directly |
+
+**Create branch if needed:**
+
+```bash
+# If baseBranch is set and branchName doesn't exist
+git checkout <baseBranch>
+git pull origin <baseBranch>
+git checkout -b <branchName>
+
+# If branchName exists but not current
+git checkout <branchName>
+```
 
 ---
 

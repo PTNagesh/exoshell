@@ -58,6 +58,18 @@ Based on user intent, load the corresponding instruction file:
 | Lock file | `.claude/ralph-ryan/<prd-slug>/lock.json` |
 | Archived runs | `.claude/ralph-ryan-archived/<date>-<prd-slug>/` |
 
+### prd.json Branch Fields
+
+| Field | Description |
+|-------|-------------|
+| `branchName` | Target branch for execution |
+| `baseBranch` | Base branch for creation (only if creating new branch) |
+
+**Branch strategy (set during prep):**
+- **Use current**: `branchName` = current branch, no `baseBranch`
+- **New from current**: `branchName` = `ralph/<prd-slug>`, `baseBranch` = current branch
+- **New from main**: `branchName` = `ralph/<prd-slug>`, `baseBranch` = `main`
+
 ---
 
 ## Quick Reference
