@@ -8,14 +8,14 @@
   },
   "plugins": [
     {
-      "name": "ralph-loop-ryan",
+      "name": "ralph-ryan",
       "description": "Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: 'ralph prd' (create PRD), 'ralph prep' (prepare), 'ralph run' (execute), 'ralph status' (overview).",
       "version": "1.0.0",
       "author": {
         "name": "wquguru",
         "email": "wquguru@gmail.com"
       },
-      "source": "./plugins/ralph-loop-ryan",
+      "source": "./plugins/ralph-ryan",
       "category": "development",
       "strict": false
     }

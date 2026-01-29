@@ -1,4 +1,4 @@
-# Ralph Loop Ryan
+# Ralph Ryan
 
 Autonomous AI agent that implements features iteratively through PRD-driven development with **multi-PRD parallel support**.
 

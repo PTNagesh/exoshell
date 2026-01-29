@@ -1,4 +1,4 @@
-# Ralph Loop Ryan Plugin
+# Ralph Ryan Plugin
 
 Ralph autonomous agent for iterative development with multi-PRD parallel support.
 
@@ -22,7 +22,7 @@ Ralph is an autonomous loop that runs Claude Code repeatedly until all PRD items
 /plugin marketplace add wquguru/exoshell
 
 # Install the plugin
-/plugin install ralph-loop-ryan@exoshell
+/plugin install ralph-ryan@exoshell
 ```
 
 ## Usage
@@ -120,7 +120,7 @@ You can run multiple PRDs in parallel on different branches. Each PRD has its ow
 ## Plugin Structure
 
 ```
-ralph-loop-ryan/
+ralph-ryan/
 ├── .claude-plugin/
 │   └── plugin.json      # Plugin metadata
 ├── commands/
