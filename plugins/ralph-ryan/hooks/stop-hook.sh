@@ -4,7 +4,7 @@
 # Prevents session exit when a ralph-ryan loop is active
 # Uses session_hash (SHA256 of transcript_path) for privacy
 
-set -euo pipefail
+set -eo pipefail
 
 # Read hook input from stdin (advanced stop hook API)
 HOOK_INPUT=$(cat)
@@ -24,19 +24,26 @@ fi
 SESSION_HASH=$(echo -n "$TRANSCRIPT_PATH" | shasum -a 256 | cut -c1-16)
 
 # Find all active loop state files
-declare -a STATE_FILES=()
-declare -a PRD_DIRS=()
+STATE_FILES=""
+PRD_DIRS=""
+STATE_COUNT=0
 
 if [[ -d "$RALPH_BASE_DIR" ]]; then
   for prd_dir in "$RALPH_BASE_DIR"/*/; do
     if [[ -f "${prd_dir}ralph-loop.local.md" ]]; then
-      STATE_FILES+=("${prd_dir}ralph-loop.local.md")
-      PRD_DIRS+=("$prd_dir")
+      if [[ $STATE_COUNT -eq 0 ]]; then
+        STATE_FILES="${prd_dir}ralph-loop.local.md"
+        PRD_DIRS="$prd_dir"
+      else
+        STATE_FILES="$STATE_FILES|${prd_dir}ralph-loop.local.md"
+        PRD_DIRS="$PRD_DIRS|$prd_dir"
+      fi
+      STATE_COUNT=$((STATE_COUNT + 1))
     fi
   done
 fi
 
-if [[ ${#STATE_FILES[@]} -eq 0 ]]; then
+if [[ $STATE_COUNT -eq 0 ]]; then
   # No active loops - allow exit
   exit 0
 fi
@@ -53,10 +60,22 @@ MATCHED_STATE_FILE=""
 MATCHED_PRD_DIR=""
 EMPTY_STATE_FILE=""
 EMPTY_PRD_DIR=""
+FIRST_STATE_FILE=""
+FIRST_PRD_DIR=""
 
-for i in "${!STATE_FILES[@]}"; do
-  STATE_FILE="${STATE_FILES[$i]}"
-  PRD_DIR="${PRD_DIRS[$i]}"
+# Iterate using pipe-delimited strings
+IFS='|' read -ra STATE_ARR <<< "$STATE_FILES"
+IFS='|' read -ra PRD_ARR <<< "$PRD_DIRS"
+
+for i in "${!STATE_ARR[@]}"; do
+  STATE_FILE="${STATE_ARR[$i]}"
+  PRD_DIR="${PRD_ARR[$i]}"
+
+  # Save first for fallback
+  if [[ -z "$FIRST_STATE_FILE" ]]; then
+    FIRST_STATE_FILE="$STATE_FILE"
+    FIRST_PRD_DIR="$PRD_DIR"
+  fi
 
   # Parse markdown frontmatter and extract session_hash
   FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$STATE_FILE")
@@ -97,14 +116,13 @@ else
   # Ask user what to do
 
   # Get PRD info from first state file for the prompt
-  FIRST_STATE="${STATE_FILES[0]}"
-  FIRST_FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$FIRST_STATE")
+  FIRST_FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$FIRST_STATE_FILE")
   FIRST_PRD_SLUG=$(echo "$FIRST_FRONTMATTER" | grep '^prd_slug:' | sed 's/prd_slug: *//' | sed 's/^"\(.*\)"$/\1/')
 
   # Output JSON to ask user
   jq -n \
     --arg prd "$FIRST_PRD_SLUG" \
-    --arg file "$FIRST_STATE" \
+    --arg file "$FIRST_STATE_FILE" \
     '{
       "decision": "ask",
       "question": "Found active Ralph loop for PRD: \($prd), but it belongs to a different session.\n\nOptions:\n1. Exit anyway (loop will remain for other session)\n2. Take over this loop (continue in current session)\n\nChoose (1 or 2):",
