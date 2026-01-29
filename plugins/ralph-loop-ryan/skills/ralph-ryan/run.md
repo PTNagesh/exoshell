@@ -1,34 +1,6 @@
 # Run Mode (Multi-PRD Support)
 
-Execute Ralph to implement user stories from a selected PRD.
-
----
-
-## Step 0: Execution Mode Selection
-
-**IMPORTANT:** Before starting, ask the user which execution mode they prefer:
-
-```
-How would you like to execute?
-
-1. 🔄 Loop Mode (Recommended) - Automatically execute all remaining stories
-2. 🎯 Single Mode - Execute only one story, then stop
-
-Enter choice (1 or 2):
-```
-
-**If user chooses Loop Mode (1):**
-- Ask user to select PRD first (Step 1)
-- Then output the ralph-loop command for them to run:
-  ```
-  Please run the following command to start loop execution:
-
-  /ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode for <prd-slug>." --max-iterations 10 --completion-promise COMPLETE
-  ```
-- **STOP here** - do not proceed with implementation. The ralph-loop command will handle it.
-
-**If user chooses Single Mode (2):**
-- Continue with the normal flow below.
+Execute Ralph to implement user stories from a selected PRD in a loop.
 
 ---
 
@@ -36,15 +8,16 @@ Enter choice (1 or 2):
 
 1. **List available PRDs** with `prd.json`
 2. **Ask user to select** which PRD to execute (or auto-select if only one)
-3. **Check/acquire lock** for selected PRD
-4. Read `prd.json` and `progress.txt`
-5. Check Codebase Patterns section first
-6. Ensure on correct branch from `branchName`
-7. Pick highest priority story where `passes: false`
-8. Implement that single story
-9. **Track files changed**
-10. Run quality checks, commit (only related files), update PRD and progress
-11. **Release lock**
+3. **Initialize loop** via setup script
+4. **Check/acquire lock** for selected PRD
+5. Read `prd.json` and `progress.txt`
+6. Check Codebase Patterns section first
+7. Ensure on correct branch from `branchName`
+8. Pick highest priority story where `passes: false`
+9. Implement that single story
+10. **Track files changed**
+11. Run quality checks, commit (only related files), update PRD and progress
+12. **Release lock**
 
 ---
 
@@ -68,7 +41,21 @@ Which PRD do you want to execute? (enter number or name):
 
 ---
 
-## Step 2: Lock Acquisition
+## Step 2: Initialize Loop
+
+After PRD selection, execute the setup script to initialize the loop:
+
+```!
+"${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph-ryan-loop.sh" <prd-slug> --max-iterations <n>
+```
+
+Where `<n>` is from user's `--max-iterations` argument (default: 0 for unlimited).
+
+**Note:** The setup script creates the state file at `.claude/ralph-ryan/<prd-slug>/ralph-loop.local.md`. The Stop Hook will detect this and continue the loop after each iteration.
+
+---
+
+## Step 3: Lock Acquisition
 
 Before starting work, create/check lock file:
 
@@ -88,7 +75,7 @@ Before starting work, create/check lock file:
 
 ---
 
-## Step 3: Conflict Detection
+## Step 4: Conflict Detection
 
 Before implementing, check if any files this PRD might touch are also tracked by other PRDs:
 
@@ -239,32 +226,31 @@ After completing a story:
 - If ALL stories in this PRD have `passes: true`:
   1. **Archive completed PRD:**
      ```bash
-     # Assuming PRD_DIR is the current PRD directory path (e.g., .claude/ralph-ryan/prd-06-risk-management)
      PRD_SLUG=$(basename "$PRD_DIR")
      mv "$PRD_DIR" ".claude/ralph-ryan-archived/$(date +%Y-%m-%d)-${PRD_SLUG}"
      ```
-  2. **Output:**
+  2. **Output completion promise:**
      ```
      <promise>COMPLETE</promise>
      Archived to: .claude/ralph-ryan-archived/YYYY-MM-DD-<prd-slug>/
      ```
 
 - If stories remain with `passes: false`:
-  End normally (next iteration continues)
+  End normally (the Stop Hook will continue the loop automatically)
 
 ---
 
-## Next Steps Prompt
+## Checklist
 
-After completing a story in **Single Mode**, always show:
-
-```
-✅ Story [ID] completed!
-
-Progress: [X]/[Total] stories done
-
-📋 Next steps:
-1. Continue with next story: /ralph-ryan run
-2. Start loop execution: /ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode for <prd-slug>." --max-iterations 10 --completion-promise COMPLETE
-3. Check status: /ralph-ryan status
-```
+- [ ] Selected PRD to execute
+- [ ] Loop initialized via setup script
+- [ ] Lock acquired
+- [ ] Conflict check passed
+- [ ] On correct branch
+- [ ] Implemented ONE story
+- [ ] Files tracked in prd.json
+- [ ] Quality checks passed
+- [ ] Committed with story reference
+- [ ] progress.txt updated
+- [ ] Lock released
+- [ ] If all done: archived and output `<promise>COMPLETE</promise>`
