@@ -11,7 +11,7 @@ Ralph is an autonomous loop that runs Claude Code repeatedly until all PRD items
 **Key Features:**
 - Multi-PRD parallel development support
 - Structured PRD generation with clarifying questions
-- Lock mechanism to prevent conflicts
+- Session-based isolation to prevent conflicts
 - File tracking for precise commits
 - Built-in loop execution (no external dependencies)
 
@@ -86,7 +86,6 @@ To stop a running loop: press Ctrl+C.
 │   ├── prd.md                       # Human-readable PRD
 │   ├── prd.json                     # Machine-readable stories
 │   ├── progress.txt                 # Learnings for future iterations
-│   ├── lock.json                    # Execution lock (prevents conflicts)
 │   └── ralph-loop.local.md          # Loop state (when running)
 ├── prd-07-model-governance/
 │   └── ...
@@ -113,8 +112,7 @@ Each story should complete in one context window.
 ### Multi-PRD Parallel Development
 
 You can run multiple PRDs in parallel on different branches. Each PRD has its own:
-- State file (`ralph-loop.local.md`)
-- Lock file (`lock.json`)
+- State file (`ralph-loop.local.md`) with session hash for isolation
 - Progress tracking (`progress.txt`)
 
 ## Plugin Structure

@@ -2,7 +2,7 @@
 
 # Ralph Ryan Stop Hook (Multi-PRD Support)
 # Prevents session exit when a ralph-ryan loop is active
-# Supports multiple PRDs running in parallel
+# Uses session_hash (SHA256 of transcript_path) for privacy
 
 set -euo pipefail
 
@@ -12,55 +12,117 @@ HOOK_INPUT=$(cat)
 # Base directory for ralph-ryan PRDs
 RALPH_BASE_DIR=".claude/ralph-ryan"
 
-# Find active loop state file across all PRDs
-# Look for ralph-loop.local.md in any PRD subdirectory
-ACTIVE_STATE_FILE=""
-ACTIVE_PRD_DIR=""
+# Get transcript path from hook input
+TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // ""')
+
+if [[ -z "$TRANSCRIPT_PATH" ]]; then
+  # No transcript path - allow exit
+  exit 0
+fi
+
+# Hash the transcript path to avoid storing full path (privacy)
+SESSION_HASH=$(echo -n "$TRANSCRIPT_PATH" | shasum -a 256 | cut -c1-16)
+
+# Find all active loop state files
+declare -a STATE_FILES=()
+declare -a PRD_DIRS=()
 
 if [[ -d "$RALPH_BASE_DIR" ]]; then
   for prd_dir in "$RALPH_BASE_DIR"/*/; do
     if [[ -f "${prd_dir}ralph-loop.local.md" ]]; then
-      ACTIVE_STATE_FILE="${prd_dir}ralph-loop.local.md"
-      ACTIVE_PRD_DIR="$prd_dir"
-      break
+      STATE_FILES+=("${prd_dir}ralph-loop.local.md")
+      PRD_DIRS+=("$prd_dir")
     fi
   done
 fi
 
-# Get current session_id from hook input
-CURRENT_SESSION_ID=$(echo "$HOOK_INPUT" | jq -r '.session_id // ""')
-
-# Get transcript path from hook input
-TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path // ""')
-
-if [[ -z "$ACTIVE_STATE_FILE" ]]; then
-  # No active loop - allow exit
+if [[ ${#STATE_FILES[@]} -eq 0 ]]; then
+  # No active loops - allow exit
   exit 0
 fi
 
 # ============================================================
-# SESSION MATCHING: Only continue loop if session_id matches
+# SESSION HASH MATCHING
 # ============================================================
-# Each ralph-loop.local.md contains a session_id field.
-# Only continue the loop if the current session matches.
-# This prevents PRD-06's loop from blocking PRD-07's prd command.
+# Each ralph-loop.local.md contains a session_hash field.
+# - Empty session_hash: new loop, needs to be claimed
+# - Matching session_hash: this session's loop, continue it
+# - Non-matching session_hash: different session's loop, skip it
+
+MATCHED_STATE_FILE=""
+MATCHED_PRD_DIR=""
+EMPTY_STATE_FILE=""
+EMPTY_PRD_DIR=""
+
+for i in "${!STATE_FILES[@]}"; do
+  STATE_FILE="${STATE_FILES[$i]}"
+  PRD_DIR="${PRD_DIRS[$i]}"
+
+  # Parse markdown frontmatter and extract session_hash
+  FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$STATE_FILE")
+  STATE_SESSION_HASH=$(echo "$FRONTMATTER" | grep '^session_hash:' | sed 's/session_hash: *//' | sed 's/^"\(.*\)"$/\1/')
+
+  if [[ -z "$STATE_SESSION_HASH" ]] || [[ "$STATE_SESSION_HASH" == '""' ]]; then
+    # Empty session_hash - candidate for claiming
+    EMPTY_STATE_FILE="$STATE_FILE"
+    EMPTY_PRD_DIR="$PRD_DIR"
+  elif [[ "$STATE_SESSION_HASH" == "$SESSION_HASH" ]]; then
+    # Exact match - this is our loop
+    MATCHED_STATE_FILE="$STATE_FILE"
+    MATCHED_PRD_DIR="$PRD_DIR"
+    break
+  fi
+done
+
+# Determine which state file to use
+ACTIVE_STATE_FILE=""
+ACTIVE_PRD_DIR=""
+
+if [[ -n "$MATCHED_STATE_FILE" ]]; then
+  # Found matching session_hash - use it
+  ACTIVE_STATE_FILE="$MATCHED_STATE_FILE"
+  ACTIVE_PRD_DIR="$MATCHED_PRD_DIR"
+elif [[ -n "$EMPTY_STATE_FILE" ]]; then
+  # Found empty session_hash - claim it by writing current session_hash
+  ACTIVE_STATE_FILE="$EMPTY_STATE_FILE"
+  ACTIVE_PRD_DIR="$EMPTY_PRD_DIR"
+
+  # Write session_hash to state file
+  TEMP_FILE="${ACTIVE_STATE_FILE}.tmp.$$"
+  sed "s|^session_hash:.*|session_hash: \"$SESSION_HASH\"|" "$ACTIVE_STATE_FILE" > "$TEMP_FILE"
+  mv "$TEMP_FILE" "$ACTIVE_STATE_FILE"
+else
+  # No matching or empty state files found
+  # There are active loops but none belong to this session
+  # Ask user what to do
+
+  # Get PRD info from first state file for the prompt
+  FIRST_STATE="${STATE_FILES[0]}"
+  FIRST_FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$FIRST_STATE")
+  FIRST_PRD_SLUG=$(echo "$FIRST_FRONTMATTER" | grep '^prd_slug:' | sed 's/prd_slug: *//' | sed 's/^"\(.*\)"$/\1/')
+
+  # Output JSON to ask user
+  jq -n \
+    --arg prd "$FIRST_PRD_SLUG" \
+    --arg file "$FIRST_STATE" \
+    '{
+      "decision": "ask",
+      "question": "Found active Ralph loop for PRD: \($prd), but it belongs to a different session.\n\nOptions:\n1. Exit anyway (loop will remain for other session)\n2. Take over this loop (continue in current session)\n\nChoose (1 or 2):",
+      "options": ["exit", "takeover"]
+    }'
+  exit 0
+fi
+
+# ============================================================
+# CONTINUE LOOP LOGIC
+# ============================================================
 
 # Parse markdown frontmatter (YAML between ---) and extract values
 FRONTMATTER=$(sed -n '/^---$/,/^---$/{ /^---$/d; p; }' "$ACTIVE_STATE_FILE")
 ITERATION=$(echo "$FRONTMATTER" | grep '^iteration:' | sed 's/iteration: *//')
 MAX_ITERATIONS=$(echo "$FRONTMATTER" | grep '^max_iterations:' | sed 's/max_iterations: *//')
 PRD_SLUG=$(echo "$FRONTMATTER" | grep '^prd_slug:' | sed 's/prd_slug: *//' | sed 's/^"\(.*\)"$/\1/')
-# Extract completion_promise and strip surrounding quotes if present
 COMPLETION_PROMISE=$(echo "$FRONTMATTER" | grep '^completion_promise:' | sed 's/completion_promise: *//' | sed 's/^"\(.*\)"$/\1/')
-# Extract session_id and strip surrounding quotes if present
-STATE_SESSION_ID=$(echo "$FRONTMATTER" | grep '^session_id:' | sed 's/session_id: *//' | sed 's/^"\(.*\)"$/\1/')
-
-# Check if session_id matches - only continue loop for the session that started it
-if [[ -n "$STATE_SESSION_ID" ]] && [[ "$STATE_SESSION_ID" != "$CURRENT_SESSION_ID" ]]; then
-  # Different session - allow exit without continuing this loop
-  # This prevents PRD-06's loop from blocking a different session running /ralph-ryan prd
-  exit 0
-fi
 
 # Verify transcript file exists
 if [[ ! -f "$TRANSCRIPT_PATH" ]]; then

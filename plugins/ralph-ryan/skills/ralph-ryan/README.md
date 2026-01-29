@@ -11,7 +11,7 @@ Ralph is an autonomous loop that runs Claude Code repeatedly until all PRD items
 **Key Features:**
 - Multi-PRD parallel development support
 - Built-in loop execution (no external dependencies)
-- Lock mechanism to prevent conflicts
+- Session-based isolation to prevent conflicts
 - File tracking for precise commits
 
 ## Workflow
@@ -40,7 +40,6 @@ To stop a running loop: press Ctrl+C.
 │   ├── prd.md                       # Human-readable PRD
 │   ├── prd.json                     # Machine-readable stories
 │   ├── progress.txt                 # Learnings for future iterations
-│   ├── lock.json                    # Execution lock (prevents conflicts)
 │   └── ralph-loop.local.md          # Loop state (when running)
 ├── prd-07-model-governance/
 │   └── ...
@@ -100,17 +99,15 @@ Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
 
 Ralph will:
 1. Initialize loop state for the selected PRD
-2. Acquire lock for the selected PRD
-3. Read prd.json and progress.txt
-4. Pick highest priority story where `passes: false`
-5. Implement that single story
-6. Track files changed
-7. Run quality checks
-8. Commit only related files
-9. Update prd.json to mark story complete
-10. Append learnings to progress.txt
-11. Release lock
-12. Repeat until all stories pass (loop continues automatically)
+2. Read prd.json and progress.txt
+3. Pick highest priority story where `passes: false`
+4. Implement that single story
+5. Track files changed
+6. Run quality checks
+7. Commit only related files
+8. Update prd.json to mark story complete
+9. Append learnings to progress.txt
+10. Repeat until all stories pass (loop continues automatically)
 
 To stop: press Ctrl+C.
 
@@ -126,22 +123,13 @@ You can run multiple PRDs simultaneously in different terminals:
 /ralph-ryan:run prd-07-model-governance --max-iterations 10
 ```
 
-### Lock Mechanism
+### Session Isolation
 
-Prevents concurrent execution conflicts:
-
-```json
-// lock.json
-{
-  "lockedBy": "session-abc123",
-  "lockedAt": "2026-01-29T10:30:00Z",
-  "storyId": "US-003"
-}
-```
-
-- Locks expire after 30 minutes
-- Stale locks can be overridden
-- Locks are released after each story
+Each loop state file (`ralph-loop.local.md`) contains a `session_hash` field. The Stop Hook automatically fills this with a SHA256 hash of the current session's transcript path on first iteration. This ensures:
+- Only the session that started the loop will continue it
+- Other sessions won't interfere with running loops
+- Privacy: no full paths are stored, only a 16-char hash
+- If a different session tries to exit with an active loop, it will be prompted to choose: exit or take over
 
 ### File Tracking
 
@@ -214,9 +202,6 @@ cat .claude/ralph-ryan/prd-06-risk-management/progress.txt
 
 # Check git history
 git log --oneline -10
-
-# Check for locks
-ls -la .claude/ralph-ryan/*/lock.json
 
 # Check active loops
 ls -la .claude/ralph-ryan/*/ralph-loop.local.md

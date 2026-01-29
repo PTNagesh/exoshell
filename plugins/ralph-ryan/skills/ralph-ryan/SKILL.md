@@ -29,13 +29,11 @@ Based on user intent, load the corresponding instruction file:
 ├── prd-06-risk-management/          # PRD 子目录
 │   ├── prd.md                       # PRD 文档
 │   ├── prd.json                     # 结构化数据
-│   ├── progress.txt                 # 进度日志
-│   └── lock.json                    # 执行锁 (可选)
+│   └── progress.txt                 # 进度日志
 ├── prd-07-model-governance/
 │   ├── prd.md
 │   ├── prd.json
-│   ├── progress.txt
-│   └── lock.json
+│   └── progress.txt
 └── ...
 
 .claude/ralph-ryan-archived/         # 已完成的 PRD
@@ -55,7 +53,7 @@ Based on user intent, load the corresponding instruction file:
 | PRD markdown | `.claude/ralph-ryan/<prd-slug>/prd.md` |
 | PRD JSON | `.claude/ralph-ryan/<prd-slug>/prd.json` |
 | Progress log | `.claude/ralph-ryan/<prd-slug>/progress.txt` |
-| Lock file | `.claude/ralph-ryan/<prd-slug>/lock.json` |
+| Loop state | `.claude/ralph-ryan/<prd-slug>/ralph-loop.local.md` |
 | Archived runs | `.claude/ralph-ryan-archived/<date>-<prd-slug>/` |
 
 ### prd.json Branch Fields
@@ -92,22 +90,13 @@ Based on user intent, load the corresponding instruction file:
 
 ---
 
-## Lock Mechanism
+## Session Isolation
 
-防止同一 PRD 被多个 agent 同时执行：
-
-```json
-// lock.json
-{
-  "lockedBy": "agent-session-id",
-  "lockedAt": "2026-01-29T10:30:00Z",
-  "storyId": "US-003"
-}
-```
-
-- Run 模式开始时创建 lock
-- 完成 story 后释放 lock
-- 超过 30 分钟的 lock 视为过期，可被覆盖
+每个循环状态文件 (`ralph-loop.local.md`) 包含 `session_hash` 字段。Stop Hook 在第一次迭代时自动填入当前会话 transcript 路径的 SHA256 哈希值（16字符），确保：
+- 只有启动循环的会话才能继续它
+- 其他会话不会干扰正在运行的循环
+- 隐私保护：不存储完整路径，只存储哈希值
+- 如果其他会话尝试退出时发现有活跃循环，会提示选择：退出或接管
 
 ---
 
