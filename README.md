@@ -45,7 +45,7 @@
 
 | Plugin | Status | Description | Docs |
 |--------|--------|-------------|------|
-| **ralph-loop-ryan** | `wip` | Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: `ralph prd`, `ralph prep`, `ralph run`, `ralph status`. | [README](./plugins/ralph-loop-ryan/README.md) |
+| **ralph-ryan** | `wip` | Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: `/ralph-ryan:prd`, `/ralph-ryan:prep`, `/ralph-ryan:run`, `/ralph-ryan:status`. | [README](./plugins/ralph-ryan/README.md) |
 
 ---
 

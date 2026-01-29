@@ -18,16 +18,16 @@ Ralph is an autonomous loop that runs Claude Code repeatedly until all PRD items
 
 ```bash
 # Check status of all PRDs
-/ralph-ryan status
+/ralph-ryan:status
 
 # Create a new PRD (will ask for slug name)
-/ralph-ryan prd [describe your feature]
+/ralph-ryan:prd [describe your feature]
 
 # Prepare a PRD for execution (will list available PRDs)
-/ralph-ryan prep
+/ralph-ryan:prep
 
 # Execute stories in a loop
-/ralph-ryan run [prd-slug] [--max-iterations N]
+/ralph-ryan:run [prd-slug] [--max-iterations N]
 ```
 
 To stop a running loop: press Ctrl+C.
@@ -55,7 +55,7 @@ To stop a running loop: press Ctrl+C.
 ### 1. Check Status
 
 ```bash
-/ralph-ryan status
+/ralph-ryan:status
 ```
 
 Shows overview of all PRDs:
@@ -67,7 +67,7 @@ Shows overview of all PRDs:
 ### 2. Generate PRD
 
 ```bash
-/ralph-ryan prd Add a task priority system with filtering
+/ralph-ryan:prd Add a task priority system with filtering
 ```
 
 Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
@@ -78,7 +78,7 @@ Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
 ### 3. Prepare for Execution
 
 ```bash
-/ralph-ryan prep
+/ralph-ryan:prep
 ```
 
 - Lists available PRDs
@@ -89,13 +89,13 @@ Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
 
 ```bash
 # Execute with auto-select (if only one PRD)
-/ralph-ryan run
+/ralph-ryan:run
 
 # Execute specific PRD
-/ralph-ryan run prd-06-risk-management
+/ralph-ryan:run prd-06-risk-management
 
 # With iteration limit
-/ralph-ryan run prd-06-risk-management --max-iterations 10
+/ralph-ryan:run prd-06-risk-management --max-iterations 10
 ```
 
 Ralph will:
@@ -120,10 +120,10 @@ You can run multiple PRDs simultaneously in different terminals:
 
 ```bash
 # Terminal 1: Execute PRD-06
-/ralph-ryan run prd-06-risk-management --max-iterations 10
+/ralph-ryan:run prd-06-risk-management --max-iterations 10
 
 # Terminal 2: Execute PRD-07
-/ralph-ryan run prd-07-model-governance --max-iterations 10
+/ralph-ryan:run prd-07-model-governance --max-iterations 10
 ```
 
 ### Lock Mechanism
@@ -204,7 +204,7 @@ When all stories have `passes: true`, Ralph outputs `<promise>COMPLETE</promise>
 
 ```bash
 # See status of all PRDs
-/ralph-ryan status
+/ralph-ryan:status
 
 # See which stories are done in a specific PRD
 cat .claude/ralph-ryan/prd-06-risk-management/prd.json | jq '.userStories[] | {id, title, passes}'

@@ -1,6 +1,6 @@
 {
   "name": "ralph-ryan",
-  "description": "Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: '/ralph-prd' (create PRD), '/ralph-prep' (prepare), '/ralph-run' (execute), '/ralph-status' (overview).",
+  "description": "Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: '/ralph-ryan:prd' (create PRD), '/ralph-ryan:prep' (prepare), '/ralph-ryan:run' (execute), '/ralph-ryan:status' (overview).",
   "author": {
     "name": "wquguru",
     "email": "wquguru@gmail.com"
