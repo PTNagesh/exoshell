@@ -13,27 +13,16 @@ Ralph is an autonomous loop that runs Claude Code repeatedly until all PRD items
 - Structured PRD generation with clarifying questions
 - Lock mechanism to prevent conflicts
 - File tracking for precise commits
-
-## Prerequisites
-
-This plugin requires the `ralph-loop` plugin from the official marketplace:
-
-```bash
-# Add the official marketplace
-/plugin marketplace add anthropics/claude-plugins-official
-
-# Install the ralph-loop plugin
-/plugin install ralph-loop@claude-plugins-official
-```
+- Built-in loop execution (no external dependencies)
 
 ## Installation
 
 ```bash
 # Add this marketplace
-/plugin marketplace add wquguru/ralph-ryan
+/plugin marketplace add wquguru/exoshell
 
 # Install the plugin
-/plugin install ralph-loop-ryan@ralph-ryan
+/plugin install ralph-loop-ryan@exoshell
 ```
 
 ## Usage
@@ -74,7 +63,11 @@ Shows overview of all PRDs:
 ### 4. Execute
 
 ```bash
-/ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode." --max-iterations 10 --completion-promise COMPLETE
+# Start loop execution (runs until all stories complete)
+/ralph-ryan run [prd-slug]
+
+# With iteration limit
+/ralph-ryan run prd-06-risk-management --max-iterations 10
 ```
 
 Ralph will:
@@ -82,6 +75,8 @@ Ralph will:
 2. Implement → Quality checks → Commit
 3. Update `prd.json` and `progress.txt`
 4. Repeat until all stories pass
+
+To stop a running loop: press Ctrl+C.
 
 ## Directory Structure
 
@@ -91,7 +86,8 @@ Ralph will:
 │   ├── prd.md                       # Human-readable PRD
 │   ├── prd.json                     # Machine-readable stories
 │   ├── progress.txt                 # Learnings for future iterations
-│   └── lock.json                    # Execution lock (prevents conflicts)
+│   ├── lock.json                    # Execution lock (prevents conflicts)
+│   └── ralph-loop.local.md          # Loop state (when running)
 ├── prd-07-model-governance/
 │   └── ...
 └── ...
@@ -114,6 +110,13 @@ Each story should complete in one context window.
 
 **Too big:** Build entire dashboard, add authentication
 
+### Multi-PRD Parallel Development
+
+You can run multiple PRDs in parallel on different branches. Each PRD has its own:
+- State file (`ralph-loop.local.md`)
+- Lock file (`lock.json`)
+- Progress tracking (`progress.txt`)
+
 ## Plugin Structure
 
 ```
@@ -122,6 +125,11 @@ ralph-loop-ryan/
 │   └── plugin.json      # Plugin metadata
 ├── commands/
 │   └── ralph-ryan.md    # /ralph-ryan command
+├── hooks/
+│   ├── hooks.json       # Stop hook configuration
+│   └── stop-hook.sh     # Loop continuation logic
+├── scripts/
+│   └── setup-ralph-ryan-loop.sh  # Loop initialization
 └── skills/
     └── ralph-ryan/      # Skill files
         ├── SKILL.md     # Entry point with routing

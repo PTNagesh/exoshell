@@ -8,23 +8,11 @@ Based on [Geoffrey Huntley's Ralph pattern](https://ghuntley.com/ralph/) and [Ry
 
 Ralph is an autonomous loop that runs Claude Code repeatedly until all PRD items are complete. Each iteration is a fresh instance with clean context. Memory persists via git history, `progress.txt`, and `prd.json`.
 
-**New in v2:** Support for multiple PRDs running in parallel on the same branch.
-
-## Installation
-
-Before using this skill, you need to install the ralph-loop plugin:
-
-**Step 1: Add the official marketplace**
-```bash
-/plugin marketplace add anthropics/claude-plugins-official
-```
-
-**Step 2: Install the ralph-loop plugin**
-```bash
-/plugin install ralph-loop@claude-plugins-official
-```
-
-Make sure to upgrade Claude Code to the latest version before installation.
+**Key Features:**
+- Multi-PRD parallel development support
+- Built-in loop execution (no external dependencies)
+- Lock mechanism to prevent conflicts
+- File tracking for precise commits
 
 ## Workflow
 
@@ -38,9 +26,11 @@ Make sure to upgrade Claude Code to the latest version before installation.
 # Prepare a PRD for execution (will list available PRDs)
 /ralph-ryan prep
 
-# Execute stories (will list available PRDs)
-/ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode." --max-iterations 10 --completion-promise COMPLETE
+# Execute stories in a loop
+/ralph-ryan run [prd-slug] [--max-iterations N]
 ```
+
+To stop a running loop: press Ctrl+C.
 
 ## Directory Structure (Multi-PRD)
 
@@ -50,7 +40,8 @@ Make sure to upgrade Claude Code to the latest version before installation.
 │   ├── prd.md                       # Human-readable PRD
 │   ├── prd.json                     # Machine-readable stories
 │   ├── progress.txt                 # Learnings for future iterations
-│   └── lock.json                    # Execution lock (prevents conflicts)
+│   ├── lock.json                    # Execution lock (prevents conflicts)
+│   └── ralph-loop.local.md          # Loop state (when running)
 ├── prd-07-model-governance/
 │   └── ...
 └── ...
@@ -97,11 +88,18 @@ Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
 ### 4. Execute
 
 ```bash
-/ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode." --max-iterations 10 --completion-promise COMPLETE
+# Execute with auto-select (if only one PRD)
+/ralph-ryan run
+
+# Execute specific PRD
+/ralph-ryan run prd-06-risk-management
+
+# With iteration limit
+/ralph-ryan run prd-06-risk-management --max-iterations 10
 ```
 
 Ralph will:
-1. List available PRDs and select one
+1. Initialize loop state for the selected PRD
 2. Acquire lock for the selected PRD
 3. Read prd.json and progress.txt
 4. Pick highest priority story where `passes: false`
@@ -112,18 +110,20 @@ Ralph will:
 9. Update prd.json to mark story complete
 10. Append learnings to progress.txt
 11. Release lock
-12. Repeat until all stories pass
+12. Repeat until all stories pass (loop continues automatically)
+
+To stop: press Ctrl+C.
 
 ## Multi-PRD Parallel Development
 
-You can run multiple PRDs simultaneously:
+You can run multiple PRDs simultaneously in different terminals:
 
 ```bash
 # Terminal 1: Execute PRD-06
-/ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode for prd-06-risk-management." --max-iterations 10 --completion-promise COMPLETE
+/ralph-ryan run prd-06-risk-management --max-iterations 10
 
 # Terminal 2: Execute PRD-07
-/ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode for prd-07-model-governance." --max-iterations 10 --completion-promise COMPLETE
+/ralph-ryan run prd-07-model-governance --max-iterations 10
 ```
 
 ### Lock Mechanism
@@ -217,6 +217,9 @@ git log --oneline -10
 
 # Check for locks
 ls -la .claude/ralph-ryan/*/lock.json
+
+# Check active loops
+ls -la .claude/ralph-ryan/*/ralph-loop.local.md
 ```
 
 ## Files
