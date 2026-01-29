@@ -41,7 +41,7 @@ Display overview of all PRDs and their execution status.
    ├── Status:    ⚪ NOT PREPARED (prd.md only)
    ├── Branch:    -
    ├── Lock:      -
-   └── Action:    Run `/ralph-ryan prep` to prepare
+   └── Action:    Run `/ralph-ryan:prep` to prepare
 
 ────────────────────────────────────────────────────────────────────
 
@@ -68,9 +68,9 @@ Potential conflicts:
 ────────────────────────────────────────────────────────────────────
 
 💡 Quick Commands:
-   /ralph-ryan prd [description]  - Create new PRD
-   /ralph-ryan prep               - Prepare PRD for execution
-   /ralph-ryan run                - Execute next story
+   /ralph-ryan:prd [description]  - Create new PRD
+   /ralph-ryan:prep               - Prepare PRD for execution
+   /ralph-ryan:run                - Execute next story
 ```
 
 ---

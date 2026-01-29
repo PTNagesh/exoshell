@@ -30,7 +30,7 @@ Ralph is an autonomous loop that runs Claude Code repeatedly until all PRD items
 ### 1. Create PRD
 
 ```bash
-/ralph-ryan prd Add a task priority system with filtering
+/ralph-ryan:prd Add a task priority system with filtering
 ```
 
 Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
@@ -41,7 +41,7 @@ Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
 ### 2. Prepare for Execution
 
 ```bash
-/ralph-ryan prep
+/ralph-ryan:prep
 ```
 
 - Lists available PRDs
@@ -51,7 +51,7 @@ Creates `.claude/ralph-ryan/<prd-slug>/prd.md` with:
 ### 3. Check Status
 
 ```bash
-/ralph-ryan status
+/ralph-ryan:status
 ```
 
 Shows overview of all PRDs:
@@ -64,10 +64,10 @@ Shows overview of all PRDs:
 
 ```bash
 # Start loop execution (runs until all stories complete)
-/ralph-ryan run [prd-slug]
+/ralph-ryan:run [prd-slug]
 
 # With iteration limit
-/ralph-ryan run prd-06-risk-management --max-iterations 10
+/ralph-ryan:run prd-06-risk-management --max-iterations 10
 ```
 
 Ralph will:
@@ -124,7 +124,10 @@ ralph-ryan/
 ├── .claude-plugin/
 │   └── plugin.json      # Plugin metadata
 ├── commands/
-│   └── ralph-ryan.md    # /ralph-ryan command
+│   ├── prd.md           # /ralph-ryan:prd command
+│   ├── prep.md          # /ralph-ryan:prep command
+│   ├── run.md           # /ralph-ryan:run command
+│   └── status.md        # /ralph-ryan:status command
 ├── hooks/
 │   ├── hooks.json       # Stop hook configuration
 │   └── stop-hook.sh     # Loop continuation logic

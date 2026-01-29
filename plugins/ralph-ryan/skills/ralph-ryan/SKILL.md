@@ -1,6 +1,6 @@
 ---
 name: ralph-ryan
-description: "Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: 'ralph prd' (create PRD), 'ralph prep' (prepare), 'ralph run' (execute), 'ralph status' (overview). Triggers on: ralph prd, ralph prep, ralph run, ralph go, ralph status."
+description: "Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: '/ralph-ryan:prd' (create PRD), '/ralph-ryan:prep' (prepare), '/ralph-ryan:run' (execute), '/ralph-ryan:status' (overview). Triggers on: ralph prd, ralph prep, ralph run, ralph go, ralph status."
 ---
 
 # Ralph Agent
@@ -64,16 +64,16 @@ Based on user intent, load the corresponding instruction file:
 
 ```bash
 # 查看所有 PRD 状态
-/ralph-ryan status
+/ralph-ryan:status
 
 # 创建新 PRD (会询问 slug 名称)
-/ralph-ryan prd [describe your feature]
+/ralph-ryan:prd [describe your feature]
 
 # 准备执行 (会列出可选 PRD)
-/ralph-ryan prep
+/ralph-ryan:prep
 
 # 执行 (会列出可选 PRD，自动循环直到完成)
-/ralph-ryan run [prd-slug] [--max-iterations N]
+/ralph-ryan:run [prd-slug] [--max-iterations N]
 ```
 
 停止循环：直接 Ctrl+C 终止即可。
