@@ -72,11 +72,11 @@ Based on user intent, load the corresponding instruction file:
 # 准备执行 (会列出可选 PRD)
 /ralph-ryan prep
 
-# 执行 (会列出可选 PRD)
-/ralph-loop:ralph-loop "Load skill ralph-ryan and execute run mode." --max-iterations 10 --completion-promise COMPLETE
+# 执行 (会列出可选 PRD，自动循环直到完成)
+/ralph-ryan run [prd-slug] [--max-iterations N]
 ```
 
-IMPORTANT NOTE: there are two `ralph-loop` in the command `/ralph-loop:ralph-loop`, don't trim it.
+停止循环：直接 Ctrl+C 终止即可。
 
 ---
 
